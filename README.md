@@ -1,110 +1,139 @@
-# DaVinci-Resolve-Export-Verification-Script
-A Lua script for DaVinci Resolve that verifies exported/transcoded footage matches the original camera files by comparing clips between two bins.
-## What it does
+# DaVinci Resolve Export Verification Scripts
 
-- **Compares clips by filename** (ignoring file extensions) between original camera footage and exported transcodes
-- **Handles different file formats** - matches `.mxf`, `.R3D`, `.mov`, etc. based on base filename
-- **Verifies duration matching** to ensure complete exports
-- **Provides detailed reporting** of matches, missing files, and mismatches
-- **Doesn't require clips to be in the same order** in both bins
+Two Lua scripts for DaVinci Resolve that automate the setup and verification of exported/transcoded footage against original camera files.
 
-## Use Cases
+## Scripts Included
 
-- **Post-production QC**: Verify all camera originals have been properly transcoded
-- **Delivery verification**: Confirm exported files match source footage
-- **Archive management**: Check that backup transcodes are complete
-- **Workflow validation**: Ensure no clips were missed during batch processing
+### 1. **create_bins.lua** - Bin Creation
+Creates the required "OCN" and "TRANSCODES" bins in your media pool for organizing footage.
+
+### 2. **resolve_export_verification.lua** - Export Verification  
+Compares clips between the two bins to verify all exports match their camera originals.
+
+## What They Do
+
+**Setup Script:**
+- ✅ Creates "OCN" and "TRANSCODES" bins automatically
+- ✅ Checks for existing bins to avoid duplicates
+- ✅ Provides clear setup instructions
+
+**Verification Script:**
+- 🔍 **Matches clips by filename** (ignoring file extensions)
+- 📊 **Handles different formats** - `.mxf`, `.R3D`, `.mov`, etc.
+- ⏱️ **Verifies duration matching** to ensure complete exports
+- 📋 **Detailed reporting** of matches, missing files, and mismatches
+- 🔀 **Order independent** - clips don't need to be sorted the same way
 
 ## Installation
 
-1. **Download the script** (`resolve_export_verification.lua`)
+1. **Download both scripts** (`create_bins.lua` and `resolve_export_verification.lua`)
 
 2. **Copy to DaVinci Resolve scripts folder**:
    - **macOS**: `~/Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/`
    - **Windows**: `%APPDATA%\Blackmagic Design\DaVinci Resolve\Support\Fusion\Scripts\`
    - **Linux**: `~/.local/share/DaVinciResolve/Fusion/Scripts/`
 
-3. **Restart DaVinci Resolve** (if it was already running)
+3. **Restart DaVinci Resolve** (if already running)
 
-## Setup
+## Complete Workflow
 
-1. **Organize your bins**:
-   - Create a bin for your **original camera files** (e.g., "OCN", "Camera Originals")
-   - Create a bin for your **exported/transcoded files** (e.g., "TRANSCODES", "Proxies")
+### Step 1: Setup Your Bins
+1. Run **create_bins.lua** via **Workspace → Scripts**
+2. Script creates "OCN" and "TRANSCODES" bins in your media pool
 
-2. **Configure the script**:
-   ```lua
-   local binNameOriginal = "OCN"           -- Change to your original footage bin name
-   local binNameExported = "TRANSCODES"    -- Change to your exported footage bin name
-   ```
+### Step 2: Import Your Footage
+- **Drag original camera files** into the **"OCN"** bin
+- **Drag exported/transcoded files** into the **"TRANSCODES"** bin
 
-## Usage
-
-### Method 1: Scripts Menu
-1. In DaVinci Resolve, go to **Workspace → Scripts**
-2. Select your verification script from the list
-3. Click **Execute**
-
-### Method 2: Console
-1. Go to **Workspace → Console**
-2. Load and run the script:
-   ```lua
-   dofile("/path/to/your/script.lua")
-   ```
+### Step 3: Verify Your Exports
+1. Run **resolve_export_verification.lua** via **Workspace → Scripts**
+2. Review the verification report in the console
 
 ## Example Output
 
+**Setup Script:**
+```
+=== DaVinci Resolve Bin Setup ===
+✅ Created bin: 'OCN'
+✅ Created bin: 'TRANSCODES'
+
+🎉 Setup successful! You can now:
+   1. Add your original camera files to the 'OCN' bin
+   2. Add your exported/transcoded files to the 'TRANSCODES' bin
+   3. Run the export verification script
+```
+
+**Verification Script:**
 ```
 Found 95 clips in original bin
 Found 95 clips in exported bin
 ✓ Match: A001C006_250613_RNQZ
 ✓ Match: A001C008_250613_RNQZ
 Missing in TRANSCODES: A001C010_250613_RNQZ.mxf
-Duration mismatch:
-  Original: A001C015_250613_RNQZ.mxf (00:02:30:15)
-  Exported: A001C015_250613_RNQZ.mov (00:02:30:10)
 
 === VERIFICATION SUMMARY ===
-Perfect matches: 93
+Perfect matches: 94
 Missing in TRANSCODES: 1
 Extra in TRANSCODES: 0
-Duration mismatches: 1
+Duration mismatches: 0
 
 ⚠️  ISSUES FOUND - Review the details above
 ```
 
-## File Matching Logic
+## File Matching Examples
 
-The script matches files by **base filename**, ignoring extensions:
+The verification script intelligently matches files by base name:
 - `A001C006_250613_RNQZ.mxf` ↔ `A001C006_250613_RNQZ.mov` ✅
-- `CLIP001.R3D` ↔ `CLIP001.mov` ✅
-- `Interview_01.mov` ↔ `Interview_01.mp4` ✅
+- `CLIP001.R3D` ↔ `CLIP001.mov` ✅  
+- `Interview_Take1.mov` ↔ `Interview_Take1.mp4` ✅
 
-## Requirements
+## Use Cases
 
-- **DaVinci Resolve** (any recent version with Lua scripting support)
-- **Organized media bins** with original and transcoded footage
-- **Consistent filename conventions** (same base names for originals and exports)
+- **Post-production QC**: Verify all camera originals were properly transcoded
+- **Delivery verification**: Confirm exported files match source footage  
+- **Archive management**: Check backup transcodes are complete
+- **Batch processing validation**: Ensure no clips were missed during automated workflows
+
+## Running the Scripts
+
+### Method 1: Scripts Menu
+1. **Workspace → Scripts**
+2. Select script and click **Execute**
+
+### Method 2: Console  
+1. **Workspace → Console**
+2. Type: `dofile("/path/to/script.lua")`
 
 ## Troubleshooting
 
-**"One or both bins not found"**
-- Check that your bin names in the script match exactly (case-sensitive)
-- Ensure bins are in the root level of your media pool
+**"No project loaded"**
+- Open a DaVinci Resolve project before running scripts
+
+**"One or both bins not found"** 
+- Run the setup script first to create the required bins
+- Check that bin names match exactly (case-sensitive)
 
 **"No clips found"**
-- Verify clips are actually in the specified bins
-- Check that clips are imported into the media pool, not just referenced
+- Ensure clips are imported into the media pool bins
+- Verify clips are in the correct bins (OCN vs TRANSCODES)
 
-**Script won't run**
-- Ensure the script file has `.lua` extension
-- Check that DaVinci Resolve has access to the scripts folder
-- Try running from the Console first to see detailed error messages
+## Requirements
+
+- **DaVinci Resolve** with Lua scripting support
+- **Consistent filename conventions** between originals and exports
+- **Media organized in bins** (not just browser references)
+
+## File Structure
+```
+your-scripts-folder/
+├── create_bins.lua                 # Creates OCN and TRANSCODES bins
+└── resolve_export_verification.lua # Verifies exports match originals
+```
 
 ## Contributing
 
-Feel free to submit issues or pull requests to improve the script functionality or add new verification features.
+Submit issues or pull requests to improve functionality or add new verification features.
 
 ## License
 
-This script is provided as-is for educational and production use. Modify as needed for your workflow.
+These scripts are provided as-is for educational and production use. Modify as needed for your workflow.

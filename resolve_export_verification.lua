@@ -1,4 +1,4 @@
--- Connect to DaVinci Resolve (FIXED)
+-- Connect to DaVinci Resolve
 local resolve = Resolve()  -- Not require("Resolve")
 local projectManager = resolve:GetProjectManager()
 local project = projectManager:GetCurrentProject()
@@ -79,9 +79,14 @@ local exportedMedia = collectMediaItems(exportedBin)
 print("Found " .. #originalMedia .. " clips in original bin")
 print("Found " .. #exportedMedia .. " clips in exported bin")
 
--- Function to get base filename without extension
+-- FIXED: Function to get base filename without extension and _001 suffix
 function getBaseName(filename)
+    -- First remove the file extension
     local baseName = filename:match("(.+)%.[^%.]+$") or filename
+    
+    -- Then remove _001 suffix if it exists (common in camera files)
+    baseName = baseName:gsub("_001$", "")
+    
     return baseName
 end
 

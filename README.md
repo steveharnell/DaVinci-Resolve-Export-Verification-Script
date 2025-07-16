@@ -29,9 +29,9 @@ Compares clips between the two bins to verify all exports match their camera ori
 1. **Download both scripts** (`create_bins.lua` and `resolve_export_verification.lua`)
 
 2. **Copy to DaVinci Resolve scripts folder**:
-   - **macOS**: `~/Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/`
-   - **Windows**: `%APPDATA%\Blackmagic Design\DaVinci Resolve\Support\Fusion\Scripts\`
-   - **Linux**: `~/.local/share/DaVinciResolve/Fusion/Scripts/`
+   - **macOS**: `~/Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/Utility`
+   - **Windows**: `%APPDATA%\Blackmagic Design\DaVinci Resolve\Support\Fusion\Scripts\Utility`
+   - **Linux**: `~/.local/share/DaVinciResolve/Fusion/Scripts/Utility`
 
 3. **Restart DaVinci Resolve** (if already running)
 

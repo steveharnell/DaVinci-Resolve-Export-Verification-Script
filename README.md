@@ -4,8 +4,8 @@ A GUI-based Lua script for DaVinci Resolve that automates the import, organizati
 
 ## Script Included
 
-### **resolve_export_verification_GUI.lua** - Media Comparison Tool with GUI
-A comprehensive tool with a graphical interface for comparing clips between OCN (Original Camera Negative) and TRANSCODES bins to verify all exports match their camera originals.
+### **resolve_export_verification_TC_GUI.lua** - Media Comparison Tool with GUI & Timecode Verification
+A comprehensive tool with a graphical interface for comparing clips between OCN (Original Camera Negative) and TRANSCODES bins to verify all exports match their camera originals, including timecode synchronization.
 
 ## What It Does
 
@@ -21,13 +21,14 @@ A comprehensive tool with a graphical interface for comparing clips between OCN 
 - 🔍 **Matches clips by filename** (ignoring file extensions and `_001` suffixes)
 - 📊 **Handles different formats** - `.mov`, `.mp4`, `.mxf`, `.r3d`, `.braw`, `.avi`, `.mkv`, `.dng`
 - ⏱️ **Verifies duration matching** to ensure complete exports
-- 📋 **Detailed reporting** of matches, missing files, and mismatches
+- 🕐 **Timecode verification** - Compares start timecodes to detect sync issues (optional)
+- 📋 **Detailed reporting** of matches, missing files, duration mismatches, and timecode mismatches
 - 🔀 **Order independent** - clips don't need to be sorted the same way
 - 🗂️ **Recursive folder scanning** - Finds media in nested subdirectories
 
 ## Installation
 
-1. **Download the script** (`resolve_export_verification_GUI.lua`)
+1. **Download the script** (`resolve_export_verification_TC_GUI.lua`)
 
 2. **Copy to DaVinci Resolve scripts folder**:
    - **macOS**: `/Users/[USERNAME]/Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/Utility`
@@ -42,7 +43,7 @@ A comprehensive tool with a graphical interface for comparing clips between OCN 
 
 Once installed, launch the script via:
 
-**Workspace → Scripts → Utility → resolve_export_verification_GUI**
+**Workspace → Scripts → Utility → resolve_export_verification_TC_GUI**
 
 ## Complete Workflow
 
@@ -60,13 +61,15 @@ Once installed, launch the script via:
 3. Files are organized into their respective bins
 
 #### Step 2: Run Comparison
-1. Click **"Run Comparison"** to verify exports against originals
-2. Review results in the display window
-3. Check for:
-   - ✅ **Perfect matches** - Files with matching durations
+1. **Enable/disable "Timecode Match"** checkbox (enabled by default) to verify start timecodes
+2. Click **"Run Comparison"** to verify exports against originals
+3. Review results in the display window
+4. Check for:
+   - ✅ **Perfect matches** - Files with matching durations and timecodes
    - ❌ **Missing in TRANSCODES** - Originals without exports
    - ⚠️ **Extra in TRANSCODES** - Exports without matching originals
    - ⚠️ **Duration mismatches** - Files with different lengths
+   - ⚠️ **Timecode mismatches** - Files with different start timecodes (when enabled)
 
 #### Step 3: Export Results (Optional)
 1. Click **"Export Log"** to save a timestamped report to your Desktop
@@ -80,6 +83,7 @@ Once installed, launch the script via:
 - **Browse Buttons** - macOS folder picker dialogs
 - **Save Paths** - Persist folder locations between sessions
 - **Auto Import** - Scan and import media from specified folders
+- **Timecode Match Checkbox** - Enable/disable timecode verification (default: enabled)
 - **Create Bins** - Manually create OCN and TRANSCODES bins
 - **Run Comparison** - Execute verification analysis
 - **Export Log** - Save results to text file
@@ -117,12 +121,17 @@ Found 95 clips in exported bin
 ✓ Match: A001C008_250613_RNQZ
 MISSING in TRANSCODES: A001C010_250613_RNQZ.mxf
 ✓ Match: A001C012_250613_RNQZ
+TIMECODE MISMATCH:
+  Original: A001C014_250613_RNQZ.mxf (Start TC: 01:00:00:00)
+  Exported: A001C014_250613_RNQZ.mov (Start TC: 00:59:59:23)
+  Difference: -1 frames
 
 === VERIFICATION SUMMARY ===
-Perfect matches: 94
+Perfect matches: 93
 Missing in TRANSCODES: 1
 Extra in TRANSCODES: 0
 Duration mismatches: 0
+Timecode mismatches: 1
 
 ISSUES FOUND - Review the details above
 ```
@@ -155,6 +164,39 @@ The script automatically detects and imports these media formats:
 - **Archive management**: Check backup transcodes are complete before drive returns
 - **Batch processing validation**: Confirm no clips were missed during automated workflows
 - **Multi-camera projects**: Verify all camera angles were transcoded
+- **Timecode synchronization**: Detect timecode drift or offset issues in transcoded files
+
+## Timecode Verification
+
+The **Timecode Match** feature compares the start timecode between original and transcoded clips to detect synchronization issues.
+
+**Why Timecode Verification Matters:**
+- **Maintains sync** - Ensures transcoded files maintain the same timecode as camera originals
+- **Detects offset issues** - Identifies clips with timecode drift or incorrect starting points
+- **Critical for multi-cam** - Verifies all camera angles remain synchronized after transcoding
+- **Frame-accurate reporting** - Shows exact frame differences when mismatches occur
+
+**How It Works:**
+1. Reads the "Start TC" metadata property from both original and transcoded clips
+2. Parses timecode format (HH:MM:SS:FF or HH:MM:SS;FF for drop frame)
+3. Calculates frame-accurate differences based on clip frame rate
+4. Reports mismatches with positive (+) or negative (-) frame offsets
+
+**When to Enable:**
+- ✅ **Multi-camera shoots** - Essential for maintaining sync between cameras
+- ✅ **Live event recordings** - Verifies timecode from synchronized camera systems
+- ✅ **Jam-synced productions** - Confirms timecode maintained through transcode process
+- ⚠️ **Archive transcodes** - May not be necessary if timecode isn't critical to workflow
+
+**When to Disable:**
+- Projects where timecode isn't relevant (wedding videos, vlogs, social content)
+- Clips without embedded timecode metadata
+- When transcode intentionally resets timecode (e.g., starting all clips at 01:00:00:00)
+
+**Supported Timecode Formats:**
+- Non-drop frame: `01:00:00:00` (colon separators)
+- Drop frame: `01:00:00;00` (semicolon before frames)
+- Automatically detects clip frame rate (23.976, 24, 25, 29.97, 30, etc.)
 
 ## Configuration File
 
@@ -186,6 +228,13 @@ The script creates a configuration file to remember your folder paths:
 - Check for clips that were trimmed during export
 - Some formats report duration differently (frames vs. timecode)
 
+**Timecode mismatches reported**
+- Check if your transcode preset is set to "Preserve source timecode"
+- Some export formats may reset timecode to 00:00:00:00 or 01:00:00:00
+- Verify source clips have embedded timecode metadata
+- Multi-camera shoots may have intentional timecode offsets (e.g., B-camera offset by +1 hour)
+- Disable "Timecode Match" checkbox if timecode verification isn't needed for your workflow
+
 ## Requirements
 
 - **DaVinci Resolve** (Studio or Free) with Lua scripting support
@@ -200,6 +249,8 @@ The script creates a configuration file to remember your folder paths:
 3. **Export logs regularly** - Save verification reports for your records
 4. **Check duration mismatches** - These often indicate incomplete transcodes
 5. **Review missing files** - May indicate failed exports or incorrect folder selection
+6. **Enable timecode matching for multi-cam** - Critical for maintaining sync across camera angles
+7. **Verify timecode in transcode settings** - Ensure your export preset preserves source timecode
 
 ## Contributing
 

@@ -486,7 +486,7 @@ end
 -- Create the GUI window
 win = disp:AddWindow({
     ID = "CompareWindow",
-    WindowTitle = "Media Comparison Tool",
+    WindowTitle = "Media Comparison Tool by 32Thirteen Productions, LLC",
     Geometry = {100, 100, 800, 600},
 
     ui:VGroup{

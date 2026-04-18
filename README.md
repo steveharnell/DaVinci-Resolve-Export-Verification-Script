@@ -339,6 +339,30 @@ The script creates a configuration file to remember your folder paths:
 8. **Verify timecode in transcode settings** — Ensure your export preset preserves source timecode
 9. **Keep audio companions out of the OCN bin** — Import only the primary video clips to keep counts accurate
 
+## Keyboard Shortcut Setup
+
+You can assign a keyboard shortcut to launch Render Check directly from DaVinci Resolve without navigating the Workspace menu.
+
+### Assign Ctrl+R in DaVinci Resolve
+
+1. Open **DaVinci Resolve** with a project loaded
+2. Go to **DaVinci Resolve → Keyboard Customization** (macOS) or **File → Keyboard Customization** (Windows/Linux)
+3. In the search field, type **`Render_Check`** (or the exact script name as it appears under Workspace → Scripts)
+4. Locate the script entry under the **Scripts** category
+5. Click in the **Key** column next to the script name
+6. Press **Ctrl+R** (or **⌘R** on macOS if preferred) to assign it
+7. Click **Save** to confirm — if prompted about a conflict, choose **Reassign**
+
+> **Note:** On macOS, **⌘R** is reserved by Resolve for Render Queue. **Ctrl+R** (the Control key, not Command) is the recommended shortcut to avoid conflicts.
+
+### Verify the Shortcut
+
+- Press **Ctrl+R** from any page in DaVinci Resolve
+- The Render Check GUI should launch immediately
+- If nothing happens, confirm the script is in the correct `Utility` scripts folder and that Resolve has been restarted since installation
+
+> **Tip:** DaVinci Resolve's keyboard customization UI may only surface scripts that have been accessed at least once via the Workspace menu. If the script doesn't appear in the shortcut list, run it manually once first via **Workspace → Scripts → Utility → Render_Check_v6**, then return to Keyboard Customization.
+
 ## Version History
 
 - **v6** — Roll-based gap grouping, timestamp stem collapse, unrecognized-naming report, broader camera convention coverage, fixed false-positive gap bug for clips with trailing `C` in suffix

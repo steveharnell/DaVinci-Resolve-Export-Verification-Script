@@ -356,5 +356,5 @@ This script is provided as-is for educational and production use. Modify as need
 
 **Created for DITs and post-production professionals who need reliable verification of transcoded media.**
 
-![Alt text](path/to/DaVinci_Resolve_Render_Check_Screenshot.png)
+<img width="769" height="381" alt="DaVinci_Resolve_Render_Check_Screenshot" src="https://github.com/user-attachments/assets/0bedad92-0e15-4a40-adce-9d1d367f2cd5" />
 

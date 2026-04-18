@@ -355,3 +355,6 @@ This script is provided as-is for educational and production use. Modify as need
 ---
 
 **Created for DITs and post-production professionals who need reliable verification of transcoded media.**
+
+![Alt text](path/to/DaVinci_Resolve_Render_Check_Screenshot.png)
+
